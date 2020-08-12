@@ -1,0 +1,44 @@
+version: '3.2'
+services: 
+  prom-pushgateway:
+    image: prom/pushgateway
+    ports: 
+      - 9091:9091
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    ports:
+      - 9090:9090
+    network_mode: host
+  app1:
+    build: .
+    image: app:0.2
+    ports:
+      - "8080:8080"
+    environment:
+      - APP_INSTANCE=app1
+      - APP_PUSH_GATEWAY=http://prom-pushgateway:9091
+  app2:
+    image: app:0.2
+    ports:
+      - "8081:8080"
+    environment:
+      - APP_INSTANCE=app2
+      - APP_PUSH_GATEWAY=http://prom-pushgateway:9091
+
+  grafana:
+    image: grafana/grafana
+    depends_on:
+      - prometheus
+    ports:
+      - 3000:3000
+    volumes:
+      - ./monitoring/grafana/provisioning/:/etc/grafana/provisioning/
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=foobar
+      - GF_USERS_ALLOW_SIGN_UP=false
+    network_mode: host
