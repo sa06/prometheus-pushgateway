@@ -67,16 +67,15 @@ func init() {
   }, []string{"name"})
   prometheus.MustRegister(totalCounter)
 
-    duration = prometheus.NewHistogramVec(
-    prometheus.HistogramOpts{
+  duration = prometheus.NewHistogramVec(prometheus.HistogramOpts{
       Name:    "service_duration_milliseconds",
       Buckets: []float64{1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
     }, []string{"name"})
   prometheus.MustRegister(duration)
 
   rows = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "service_rows",
-	}, []string{"name"})
+		  Name: "service_rows",
+	  }, []string{"name"})
 	prometheus.MustRegister(rows)
 }
 
