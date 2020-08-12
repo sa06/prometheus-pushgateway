@@ -2,7 +2,7 @@
 
 Prometheus provides a Pushgateway to allow to push metrics that can not be scrapped. That does not mean that we should use push model for every job or service we have. Prometheus documentation strongly recommends to use pull model but that does not mean that we can't check how to use it. And Pushgateway GitHub Readme says "Pushgateway is not capable of turning Prometheus into a push-based monitoring system".
 
-*Please read <a href="https://prometheus.io/docs/practices/pushing/">documentation</a> carefully before consider to use Pushgateway as it describes when Pushgateway should be used.*
+_Please read <a href="https://prometheus.io/docs/practices/pushing/">documentation</a> carefully before consider to use Pushgateway as it describes when Pushgateway should be used._
 
 General idea is that our service will push metrics to Pushgateway and Prometheus will scrape metrics from it. To compare, we will configure Prometheus to scrape metrics from Pushgateway and our service. 
 
@@ -60,19 +60,23 @@ scrape_configs:
       service: 'app-service'
 ```
 In our service we initialize counters as we usually do:
-```
+```golang
 func init() {
   totalCounter = prometheus.NewCounterVec(prometheus.CounterOpts{
     Name: "service_total_count",
   }, []string{"name"})
   prometheus.MustRegister(totalCounter)
 
-    duration = prometheus.NewHistogramVec(
-    prometheus.HistogramOpts{
+  duration = prometheus.NewHistogramVec(prometheus.HistogramOpts{
       Name:    "service_duration_milliseconds",
       Buckets: []float64{1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
     }, []string{"name"})
   prometheus.MustRegister(duration)
+
+  rows = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+      Name: "service_rows",
+    }, []string{"name"})
+  prometheus.MustRegister(rows)
 }
 
 
@@ -95,10 +99,10 @@ service_total_count{instance="localhost:8080",job="dev-app",name="action-1",serv
 service_total_count{instance="localhost:8081",job="dev-app",name="action-1",service="app-service"}  23
 ``` 
 Everything seems to be fine and we can create Pusher and we start goroutine to push our metrics each 5 seconds:
-```
+```golang
 func InitPusher(ctx context.Context, cfg *PushConfig) {
   registry := prometheus.NewRegistry()
-  registry.MustRegister(duration, totalCounter)
+  registry.MustRegister(duration, totalCounter, rows)
   pusher := push.New(cfg.URL, cfg.Job).Gatherer(registry)
 
   // start pusher
@@ -148,7 +152,7 @@ service_total_count{instance="localhost:8081",job="dev-app",name="action-1",serv
 Ok, now we can add Grafana boards for visualization and everything looks normal:
 ![Grafana](./doc/images/grafana1.png)
 
-Now, let's stop one of the services. As we can see, one of the metrics we have "is lying" to us: 
+Now, let's stop one of the services (app1). As we can see, one of the metrics "is lying" to us: 
 ![Grafana](./doc/images/grafana2.png)
 
 The reason is that Pushgateway will not remove any metrics. Even if our service is stopped we can see that Pushgateway has metrics for it:
@@ -159,7 +163,7 @@ service_rows{instance="app2",job="app-service",name="action-1"} 1
 
 
 Links:
-* https://prometheus.io/docs/practices/pushing/
-* https://github.com/prometheus/pushgateway
-* https://www.robustperception.io/common-pitfalls-when-using-the-pushgateway
-* https://github.com/prometheus-community/PushProx
+- https://prometheus.io/docs/practices/pushing/
+- https://github.com/prometheus/pushgateway
+- https://www.robustperception.io/common-pitfalls-when-using-the-pushgateway
+- https://github.com/prometheus-community/PushProx
