@@ -74,9 +74,9 @@ func init() {
   prometheus.MustRegister(duration)
 
   rows = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		  Name: "service_rows",
-	  }, []string{"name"})
-	prometheus.MustRegister(rows)
+      Name: "service_rows",
+    }, []string{"name"})
+  prometheus.MustRegister(rows)
 }
 
 
