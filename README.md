@@ -146,8 +146,10 @@ service_total_count{instance="localhost:8081",job="dev-app",name="action-1",serv
 ```
 
 Ok, now we can add Grafana boards for visualization and everything looks normal:
+![Grafana](./doc/images/grafana1.png)
 
 Now, let's stop one of the services. As we can see, one of the metrics we have "is lying" to us: 
+![Grafana](./doc/images/grafana2.png)
 
 The reason is that Pushgateway will not remove any metrics. Even if our service is stopped we can see that Pushgateway has metrics for it:
 ```
