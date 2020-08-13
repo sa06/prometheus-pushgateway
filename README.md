@@ -128,7 +128,7 @@ service_total_count{exported_job="function",instance="localhost:9091",job="dev-p
 service_total_count{instance="localhost:8080",job="dev-app",name="action-1",service="app-service"}  3
 service_total_count{instance="localhost:8081",job="dev-app",name="action-1",service="app-service"}  3
 ```
-There are two issues here. First, we have exported_job label for our prom-pushgateway, but that is easy to solve: we have to add ` honor_labels: true ` to the Prometheus config file. Second, we have don't have metrics from one of the services. If we check metrics for Pushgateway we can see that it is not consistent and service overwrites metrics:
+There are two issues here. First, we have exported_job label for our prom-pushgateway, but that is easy to solve: we have to add ` honor_labels: true ` to the Prometheus config file. Second, we have don't have metrics from one of the services and we don't know which one. If we check metrics for Pushgateway (http://localhost:9091/metrics) we can see that it is not consistent and service overwrites metrics from another one:
 ```
 service_total_count{job="function",name="action-1"} 98
 ```
