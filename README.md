@@ -8,8 +8,13 @@ When you need to get started quickly, use these instructions.
 2. [Open Pushgateway in a browser](http://localhost:9091/metrics)
 3. [Open Prometheus in a browser](http://localhost:9090/)
 4. [Open Grafana in a browser](http://localhost:3000/login) using admin/foobar
+5. [open Alertmanager UI in a browser](http://localhost:9093/#/alerts)
+
+To see alerts being triggered, shut-down one of the monitored containers (app1 or app2) and wait for 1 min. The alert will appear in the webhook container logs and on the Alertmanager UI.
 
 ## How it all works
+
+### Pushgateway
 
 Prometheus provides a Pushgateway to allow to push metrics that can not be scrapped. That does not mean that we should use push model for every job or service we have. Prometheus documentation strongly recommends to use pull model but that does not mean that we can't check how to use it. And Pushgateway GitHub Readme says "Pushgateway is not capable of turning Prometheus into a push-based monitoring system".
 
@@ -191,9 +196,15 @@ service_rows{instance="app1",job="app-service",name="action-1"} 3
 service_rows{instance="app2",job="app-service",name="action-1"} 1
 ```
 
-Links:
+#### Links
 
 - https://prometheus.io/docs/practices/pushing/
 - https://github.com/prometheus/pushgateway
 - https://www.robustperception.io/common-pitfalls-when-using-the-pushgateway
 - https://github.com/prometheus-community/PushProx
+
+### Alertmanager
+
+The Alertmanager included in this project is adapted from the example in the [Prometheus playground](https://github.com/prometheus-community/prometheus-playground/tree/master/alertmanager).
+
+The alerts are configured very simply: an alert will be triggered (visible in the webhook container logs), 30 seconds after [this number](http://localhost:9090/graph?g0.expr=rate(service_duration_milliseconds_bucket%7Bjob%3D%22app-service%22%2C%20le%3D%2210%22%7D%5B30s%5D)&g0.tab=1&g0.stacked=0&g0.show_exemplars=0&g0.range_input=1h) drops to 0.

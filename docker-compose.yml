@@ -7,7 +7,7 @@ services:
   prometheus:
     image: prom/prometheus
     volumes:
-      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./monitoring/prometheus:/etc/prometheus:ro
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
@@ -39,3 +39,23 @@ services:
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=foobar
       - GF_USERS_ALLOW_SIGN_UP=false
+  alertmanager:
+    image: prom/alertmanager
+    ports:
+    - 9093:9093
+    command:
+    - --config.file=/etc/alertmanager/alertmanager.yml
+    volumes:
+    - ./monitoring/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+
+  webhook:
+    build:
+      context: webhook
+      args:
+        goPackage: github.com/prometheus-community/prometheus-playground/alertmanager/webhook
+        goVersion: 1.17
+      cache_from:
+      - golang:1.17
+      - scratch
+    ports:
+    - 5001:5001
