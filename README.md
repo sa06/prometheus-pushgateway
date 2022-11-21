@@ -4,7 +4,7 @@ Prometheus provides a Pushgateway to allow to push metrics that can not be scrap
 
 _Please read [documentation](https://prometheus.io/docs/practices/pushing/)> carefully before consider to use Pushgateway as it describes when Pushgateway should be used._
 
-General idea is that our service will push metrics to Pushgateway and Prometheus will scrape metrics from it. To compare, we will configure Prometheus to scrape metrics from Pushgateway and our service. 
+General idea is that our service will push metrics to Pushgateway and Prometheus will scrape metrics from it. To compare, we will configure Prometheus to scrape metrics from Pushgateway and our service.
 
 So, we need to have our service, pushgateway and prometheus running. For that we will use simple docker-compose with Prometheus, Pushgateway, Grafana and two services:
 
@@ -104,7 +104,7 @@ We run "docker-compose up" and now we can see our metrics in Prometheus:
 ```text
 service_total_count{instance="localhost:8080",job="dev-app",name="action-1",service="app-service"}  22
 service_total_count{instance="localhost:8081",job="dev-app",name="action-1",service="app-service"}  23
-``` 
+```
 
 Everything seems to be fine and we can create Pusher and we start goroutine to push our metrics each 5 seconds:
 
@@ -140,7 +140,7 @@ service_total_count{instance="localhost:8080",job="dev-app",name="action-1",serv
 service_total_count{instance="localhost:8081",job="dev-app",name="action-1",service="app-service"}  3
 ```
 
-There are two issues here. First, we have exported_job label for our prom-pushgateway, but that is easy to solve: we have to add ` honor_labels: true ` to the Prometheus config file. Second, we have don't have metrics from one of the services and we don't know which one. If we check metrics for Pushgateway (http://localhost:9091/metrics) we can see that it is not consistent and service overwrites metrics from another one:
+There are two issues here. First, we have exported_job label for our prom-pushgateway, but that is easy to solve: we have to add ` honor_labels: true ` to the Prometheus config file. Second, we have don't have metrics from one of the services and we don't know which one. If we check metrics for [Pushgateway](http://localhost:9091/metrics) we can see that it is not consistent and service overwrites metrics from another one:
 
 ```text
 service_total_count{job="function",name="action-1"} 98
@@ -181,6 +181,7 @@ service_rows{instance="app2",job="app-service",name="action-1"} 1
 ```
 
 Links:
+
 - https://prometheus.io/docs/practices/pushing/
 - https://github.com/prometheus/pushgateway
 - https://www.robustperception.io/common-pitfalls-when-using-the-pushgateway
