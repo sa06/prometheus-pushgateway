@@ -1,5 +1,16 @@
 # Prometheus Pushgateway
 
+## Quick start
+
+When you need to get started quickly, use these instructions.
+
+1. `docker-compose run`
+2. [Open Pushgateway in a browser](http://localhost:9091/metrics)
+3. [Open Prometheus in a browser](http://localhost:9090/)
+4. [Open Grafana in a browser](http://localhost:3000/login) using admin/foobar
+
+## How it all works
+
 Prometheus provides a Pushgateway to allow to push metrics that can not be scrapped. That does not mean that we should use push model for every job or service we have. Prometheus documentation strongly recommends to use pull model but that does not mean that we can't check how to use it. And Pushgateway GitHub Readme says "Pushgateway is not capable of turning Prometheus into a push-based monitoring system".
 
 _Please read [documentation](https://prometheus.io/docs/practices/pushing/)> carefully before consider to use Pushgateway as it describes when Pushgateway should be used._
