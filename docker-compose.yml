@@ -15,14 +15,13 @@ services:
       - 9090:9090
   app1:
     build: .
-    image: app:0.1
     ports:
       - "8080:8080"
     environment:
       - APP_INSTANCE=app1
       - APP_PUSH_GATEWAY=http://prom-pushgateway:9091
   app2:
-    image: app:0.1
+    build: .
     ports:
       - "8081:8080"
     environment:
