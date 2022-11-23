@@ -4,7 +4,7 @@
 
 When you need to get started quickly, use these instructions.
 
-1. `docker-compose run`
+1. `docker-compose up`
 2. [Open Pushgateway in a browser](http://localhost:9091/metrics)
 3. [Open Prometheus in a browser](http://localhost:9090/)
 4. [Open Grafana in a browser](http://localhost:3000/login) using admin/foobar
