@@ -1,20 +1,31 @@
 global:
-  scrape_interval: 15s
+  scrape_interval: 10s
   scrape_timeout: 1s
-  evaluation_interval: 15s
+  evaluation_interval: 10s
+
 scrape_configs:
 - job_name: dev-push-gateway
   metrics_path: /metrics
   scheme: http
   honor_labels: true
   static_configs:
-  - targets: ['localhost:9091']
+  - targets: ['prom-pushgateway:9091']
     labels:
       service: 'prom-pushgateway'
 - job_name: dev-app
   metrics_path: /metrics
   scheme: http
   static_configs:
-  - targets: ['localhost:8080', "localhost:8081"]
+  - targets: ['app1:8080', "app2:8081"]
     labels:
       service: 'app-service'
+
+rule_files:
+- /etc/prometheus/alert.rules
+
+alerting:
+  alertmanagers:
+  - scheme: http
+    static_configs:
+    - targets:
+      - alertmanager:9093

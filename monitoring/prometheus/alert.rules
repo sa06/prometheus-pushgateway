@@ -1,0 +1,12 @@
+groups:
+- name: node.rules
+  rules:
+  - alert: InstanceDown
+    expr: rate(service_duration_milliseconds_bucket{job="app-service", le="10"}[30s]) == 0
+    for: 30s
+    labels:
+      severity: page
+    annotations:
+      summary: "Instance {{ $labels.instance }} down"
+      description: "Instance {{ $labels.instance }} of job {{ $labels.job }} has been down for more than 30 seconds"
+      
